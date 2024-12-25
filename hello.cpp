@@ -1,8 +1,9 @@
 #include <iostream>
 using namespace std;
-
 int main()
 {
-    // kch bhi krlo
-}//matlab??
-// konsi file
+
+    cout << "Hello world\n";
+    printf("What are you doing");
+    string message = "hello world";
+}

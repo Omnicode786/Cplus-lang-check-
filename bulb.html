@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Dashboard - Dark Mode</title>
+    <style>
+        /* styles.css */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .device {
+            background: #1e1e1e; /* Dark card background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .device:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .icon-wrapper svg {
+            width: 64px;
+            height: 64px;
+            margin: 15px auto;
+        }
+
+        .light-bulb {
+            fill: #555; /* Default bulb color */
+            transition: fill 0.3s ease, opacity 0.3s ease;
+            opacity: 0.3;
+        }
+
+        .thermostat {
+            fill: #555; /* Default thermostat color */
+            transition: fill 0.3s ease, opacity 0.3s ease;
+        }
+
+        .thermostat.active {
+            fill: #ff6e40; /* Active color for thermostat */
+        }
+
+        .camera-body {
+            fill: #333;
+        }
+
+        .camera-lens {
+            fill: #555; /* Default lens color */
+            transition: fill 0.3s ease;
+        }
+
+        .toggle-btn {
+            padding: 10px 20px;
+            background: #6200ea; /* Purple button */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #3700b3;
+        }
+
+        .slider {
+            width: 80%;
+            margin: 10px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Smart Home Automation</h1>
+        </header>
+
+        <main class="dashboard">
+            <!-- Light Control -->
+            <div class="device" id="light">
+                <div class="icon-wrapper">
+                    <svg id="light-icon" viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="15" class="light-bulb"></circle>
+                    </svg>
+                </div>
+                <h3>Light</h3>
+                <p>Status: <span class="status" id="light-status">OFF</span></p>
+                <button class="toggle-btn" onclick="toggleDevice('light')">Toggle Light</button>
+                <input type="range" min="0" max="100" value="0" class="slider" id="brightness-slider" oninput="updateBrightness(this.value)">
+                <p>Brightness: <span id="brightness-value">0</span>%</p>
+            </div>
+
+            <!-- Thermostat Control -->
+            <div class="device" id="thermostat">
+                <div class="icon-wrapper">
+                    <svg id="thermostat-icon" viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="15" class="thermostat"></circle>
+                    </svg>
+                </div>
+                <h3>Thermostat</h3>
+                <p>Status: <span class="status" id="thermostat-status">OFF</span></p>
+                <button class="toggle-btn" onclick="toggleDevice('thermostat')">Toggle Thermostat</button>
+                <input type="range" min="15" max="30" value="20" class="slider" id="temperature-slider" oninput="updateTemperature(this.value)">
+                <p>Temperature: <span id="temperature-value">20</span>°C</p>
+            </div>
+
+            <!-- Security Camera Control -->
+            <div class="device" id="camera">
+                <div class="icon-wrapper">
+                    <svg id="camera-icon" viewBox="0 0 64 64">
+                        <rect x="20" y="25" width="24" height="15" class="camera-body"></rect>
+                        <circle cx="32" cy="32" r="5" class="camera-lens"></circle>
+                    </svg>
+                </div>
+                <h3>Camera</h3>
+                <p>Status: <span class="status" id="camera-status">OFF</span></p>
+                <button class="toggle-btn" onclick="toggleDevice('camera')">Toggle Camera</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleDevice(device) {
+            const statusElement = document.getElementById(`${device}-status`);
+            const iconElement = document.getElementById(`${device}-icon`);
+            const currentStatus = statusElement.textContent;
+
+            const newStatus = currentStatus === "OFF" ? "ON" : "OFF";
+            statusElement.textContent = newStatus;
+
+            if (device === "light") {
+                const bulb = iconElement.querySelector('.light-bulb');
+                bulb.style.fill = newStatus === "ON" ? "yellow" : "#555";
+                bulb.style.opacity = newStatus === "ON" ? "1" : "0.3";
+            }
+
+            if (device === "thermostat") {
+                const thermostat = iconElement.querySelector('.thermostat');
+                thermostat.classList.toggle("active", newStatus === "ON");
+            }
+
+            if (device === "camera") {
+                const lens = iconElement.querySelector('.camera-lens');
+                lens.style.fill = newStatus === "ON" ? "red" : "#555";
+            }
+        }
+
+        function updateBrightness(value) {
+            document.getElementById("brightness-value").textContent = value;
+            const bulb = document.querySelector("#light-icon .light-bulb");
+            bulb.style.opacity = value / 100;
+        }
+
+        function updateTemperature(value) {
+            document.getElementById("temperature-value").textContent = value;
+            const thermostat = document.querySelector("#thermostat-icon .thermostat");
+            const color = `rgb(${255 - (value - 15) * 8}, ${64}, ${64})`;
+            thermostat.style.fill = color;
+        }
+    </script>
+</body>
+</html>
